@@ -18,6 +18,11 @@ This technique is used to speed-up our algorithm so that we can increase the dep
 ***Forward Pruning***: is a method to decrease the number of nodes that are checked at each level in a search.
 To prune the 'unpromising' nodes we can use an evaluation function or make use of a mechanical method like **Beam Search**.
 
-## The Game
+## Game Rules
 - The board is of size `8 × 8`.
-- There is no input to the algorithm, since the start state of the game is always the same
+- There is no input to the algorithm, since the start state of the game is always the same.
+- A black soldier piece, can only move to its top-left or top-right cell or attack a white piece.
+- A white soldier piece, can only move to its bottom-left or bottom-right cell or attack a black piece.
+- A king piece can move to its 4 adjacent cells.
+- Consecutive attacks are allowed.
+- Attacking when possible, is not mandatory.
