@@ -39,6 +39,9 @@ class Piece:
     
     def pieceIsSoldier(self):
         return self.isSoldier
+    
+    def Kingify(self):
+        self.isSoldier = False
         
 class GameBoard:
     def __init__(self):
@@ -327,7 +330,24 @@ class GameBoard:
                 return valid_pos(new_pos_x2) and valid_pos(new_pos_y2) and self.matrix[new_pos_x2][new_pos_y2].cellIsEmpty()
 
         return False
-
+    
+    def move(self, piece: Piece, new_pos: tuple):
+        current_pos = piece.getPos()
+        new_pos_x = new_pos[0]
+        
+        piece.setPos(new_pos)
+        if piece.getColor() == 'B':
+            self.black_pieces.pop(current_pos)
+            if new_pos_x == 0:
+                if piece.pieceIsSoldier():
+                    piece.Kingify()
+            self.black_pieces[new_pos] = piece
+        else:
+            self.white_pieces.pop(current_pos)
+            if new_pos_x == 7:
+                if piece.pieceIsSoldier():
+                    piece.Kingify()
+            self.white_pieces[new_pos] = piece
     
     def getMatrix(self):
         return self.matrix
