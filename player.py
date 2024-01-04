@@ -7,17 +7,17 @@ class Cell:
         self.isEmpty = isEmpty
         self.color = color
     
-    def getPos(self):
+    def get_pos(self):
         return self.pos
     
-    def getColor(self):
+    def get_color(self):
         return self.color
     
-    def cellIsEmpty(self):
+    def is_empty(self):
         return self.isEmpty
     
     def change_state(self):
-        if self.cellIsEmpty():
+        if self.is_empty():
             self.isEmpty = False
         else:
             self.isEmpty = True
@@ -28,19 +28,19 @@ class Piece:
         self.isSoldier = isSoldier
         self.COLOR = color
     
-    def setPos(self, pos: tuple):
+    def set_pos(self, pos: tuple):
         self.pos = pos
     
-    def getPos(self):
+    def get_pos(self):
         return self.pos
     
-    def getColor(self):
+    def get_color(self):
         return self.COLOR
     
-    def pieceIsSoldier(self):
+    def is_soldier(self):
         return self.isSoldier
     
-    def Kingify(self):
+    def kingify(self):
         self.isSoldier = False
         
 class GameBoard:
@@ -57,24 +57,24 @@ class GameBoard:
         self.__put_pieces()
                     
     def __put_pieces(self):
-        game_mat = self.getMatrix()
+        game_mat = self.get_matrix()
         for row in game_mat[-3:]:
             for cell in row:
-                if cell.getColor() == 'B':
+                if cell.get_color() == 'B':
                     cell.change_state()
-                    self.black_pieces[cell.getPos()] = Piece(cell.getPos(), 'B')
+                    self.black_pieces[cell.get_pos()] = Piece(cell.get_pos(), 'B')
         
         for row in game_mat[:3]:
             for cell in row:
-                if cell.getColor() == 'B':
+                if cell.get_color() == 'B':
                     cell.change_state()
-                    self.white_pieces[cell.getPos()] = Piece(cell.getPos(), 'W')
+                    self.white_pieces[cell.get_pos()] = Piece(cell.get_pos(), 'W')
             
     def piece_can_move(self, piece: Piece):
-        piece_pos_x, piece_pos_y = piece.getPos()
-        piece_color = piece.getColor()
+        piece_pos_x, piece_pos_y = piece.get_pos()
+        piece_color = piece.get_color()
 
-        if piece.pieceIsSoldier():
+        if piece.is_soldier():
             return self._get_soldier_moves(piece_pos_x, piece_pos_y, piece_color)
         else:
             return self._get_king_moves(piece_pos_x, piece_pos_y, piece_color)
@@ -104,62 +104,62 @@ class GameBoard:
         if not valid_pos(new_pos_x) or not valid_pos(new_pos_y):
             return False
 
-        if self.matrix[new_pos_x][new_pos_y].cellIsEmpty():
+        if self.matrix[new_pos_x][new_pos_y].is_empty():
             return True
 
         if piece_color == 'B':
             if (new_pos_x, new_pos_y) in self.white_pieces:
                 new_pos_x2 = new_pos_x + 1
                 new_pos_y2 = new_pos_y + (1 if dy == -1 else -1)
-                return valid_pos(new_pos_x2) and valid_pos(new_pos_y2) and self.matrix[new_pos_x2][new_pos_y2].cellIsEmpty()
+                return valid_pos(new_pos_x2) and valid_pos(new_pos_y2) and self.matrix[new_pos_x2][new_pos_y2].is_empty()
         else:
             if (new_pos_x, new_pos_y) in self.black_pieces:
                 new_pos_x2 = new_pos_x - 1
                 new_pos_y2 = new_pos_y + (1 if dy == -1 else -1)
-                return valid_pos(new_pos_x2) and valid_pos(new_pos_y2) and self.matrix[new_pos_x2][new_pos_y2].cellIsEmpty()
+                return valid_pos(new_pos_x2) and valid_pos(new_pos_y2) and self.matrix[new_pos_x2][new_pos_y2].is_empty()
 
         return False
     
     def move(self, piece: Piece, new_pos: tuple):
-        current_pos = piece.getPos()
+        current_pos = piece.get_pos()
         new_pos_x = new_pos[0]
         
-        piece.setPos(new_pos)
-        if piece.getColor() == 'B':
+        piece.set_pos(new_pos)
+        if piece.get_color() == 'B':
             self.black_pieces.pop(current_pos)
             if new_pos_x == 0:
-                if piece.pieceIsSoldier():
-                    piece.Kingify()
+                if piece.is_soldier():
+                    piece.kingify()
             self.black_pieces[new_pos] = piece
         else:
             self.white_pieces.pop(current_pos)
             if new_pos_x == 7:
-                if piece.pieceIsSoldier():
-                    piece.Kingify()
+                if piece.is_soldier():
+                    piece.kingify()
             self.white_pieces[new_pos] = piece
     
-    def getMatrix(self):
+    def get_matrix(self):
         return self.matrix
     
-    def getBlackPieces(self):
+    def get_black_pieces(self):
         return self.black_pieces
     
-    def getWhitePieces(self):
+    def get_white_pieces(self):
         return self.white_pieces
        
     def empty_cells(self):
         empty_cells_list = []
-        game_mat = self.getMatrix()
+        game_mat = self.get_matrix()
         for row in game_mat:
             for cell in row:
-                if cell.cellIsEmpty():
+                if cell.is_empty():
                     empty_cells_list.append(cell)
 
         return empty_cells_list
 
 gboard = GameBoard()
 
-bpieces = gboard.getBlackPieces()
+bpieces = gboard.get_black_pieces()
 for piece in bpieces:
     if gboard.piece_can_move(bpieces[piece]):
         print(piece, gboard.piece_can_move(bpieces[piece]))
