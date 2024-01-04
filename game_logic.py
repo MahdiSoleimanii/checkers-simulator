@@ -46,6 +46,9 @@ class Piece:
     def kingify(self):
         self.isSoldier = False
         
+    def info(self):
+        return f"Position: {self.get_pos()}\nColor: {self.get_color()}\nRole: {"Soldier" if self.is_soldier() else "King"}"
+        
 class GameBoard:
     def __init__(self):
         self.matrix = [[None for _ in range(8)] for _ in range(8)]
@@ -73,216 +76,52 @@ class GameBoard:
                     cell.change_state()
                     self.white_pieces[cell.get_pos()] = Piece(cell.get_pos(), 'W')
     
+    def pos_info(self, pos: tuple):
+        if pos in self.black_pieces:
+            return self.black_pieces[pos].info()
+        else:
+            return self.white_pieces[pos].info()
+    
     def piece_can_move(self, piece: Piece):
+        moves = []
         piece_pos_x, piece_pos_y = piece.get_pos()
         piece_color = piece.get_color()
-        # First check if the piece is a Soldier piece or a King piece
+        enemy_pieces = self.white_pieces if piece_color == 'B' else self.black_pieces
+
+        x_dirs = []
+        new_x_pos = []
         if piece.is_soldier():
-            # Then we check moves for a Black Soldier Piece
             if piece_color == 'B':
-                black_moves = []
-                # A Black Soldier Piece can go Top-Left or Top-Right
-                new_pos_x = piece_pos_x - 1
-                new_pos_y1 = piece_pos_y - 1
-                new_pos_y2 = piece_pos_y + 1
-                # Check if going up is in-bound.
-                if valid_pos(new_pos_x):
-                    # If can go up, check if going left is in-bound.
-                    if valid_pos(new_pos_y1):
-                        # If the cell in Top-Left is empty, can move to it.
-                        # So return True and coord of Top-Left cell
-                        if self.matrix[new_pos_x][new_pos_y1].is_empty():
-                            black_moves.append((new_pos_x, new_pos_y1))
-                        # If the cell in Top-Left isn't empty...
-                        else:
-                            # Check if the piece in Top-Left is a White Piece
-                            new_pos = (new_pos_x, new_pos_y1)
-                            if new_pos in self.white_pieces:
-                                # If it is a White Piece, check Top-Left of it
-                                new_pos_x1 = new_pos_x - 1
-                                new_pos_y11 = new_pos_y1 - 1
-                                # If Top-Left of the White Piece isn't out of bounds...
-                                if valid_pos(new_pos_x1) and valid_pos(new_pos_y11):
-                                    # If Top-Left of the White Piece is empty,
-                                    # return True and the coords of it.
-                                    if self.matrix[new_pos_x1][new_pos_y11].is_empty():
-                                        black_moves.append((new_pos_x1, new_pos_y11))
-                    # If can go up, but going left is out of bounds.
-                    # for a Black Soldier Piece both Top-Left and Top-Right can't be out of bounds at the same time.
-                    if valid_pos(new_pos_y2):
-                        # If the cell in Top-Right is empty, can move to it.
-                        # So return True and coord of Top-Right cell
-                        if self.matrix[new_pos_x][new_pos_y2].is_empty():
-                            black_moves.append((new_pos_x, new_pos_y2))
-                        # If the cell in Top-Right isn't empty...
-                        else:
-                            # Check if the piece in Top-Right is a White Piece
-                            new_pos = (new_pos_x, new_pos_y2)
-                            if new_pos in self.white_pieces:
-                                # If it is a White Piece, check Top-Right of it
-                                new_pos_x1 = new_pos_x - 1
-                                new_pos_y22 = new_pos_y2 + 1
-                                # If Top-Right of the White Piece isn't out of bounds...
-                                if valid_pos(new_pos_x1) and valid_pos(new_pos_y22):
-                                    # If Top-Right of the White Piece is empty,
-                                    # return True and the coords of it.
-                                    if self.matrix[new_pos_x1][new_pos_y22].is_empty():
-                                        black_moves.append((new_pos_x1, new_pos_y22))
-                return black_moves
-            # If it isn't a Black Piece, it's definitely a White Soldier Piece.
-            # So we check moves for a White Soldier Piece
+                new_x_pos.append(piece_pos_x - 1)
+                x_dirs.append(-1)
             else:
-                white_moves = []
-                # A White Soldier Piece can go Bottom-Left or Bottom-Right
-                new_pos_x = piece_pos_x + 1
-                new_pos_y1 = piece_pos_y - 1
-                new_pos_y2 = piece_pos_y + 1
-                # Check if going down is in-bound.
-                if valid_pos(new_pos_x):
-                    # If can go down, check if going left is in-bound.
-                    if valid_pos(new_pos_y1):
-                        # If the cell in Bottom-Left is empty, can move to it.
-                        # save its coords.
-                        if self.matrix[new_pos_x][new_pos_y1].is_empty():
-                            white_moves.append((new_pos_x, new_pos_y1))
-                        # If the cell in Top-Left isn't empty...
-                        else:
-                            # Check if the piece in Bottom-Left is a Black Piece
-                            new_pos = (new_pos_x, new_pos_y1)
-                            if new_pos in self.black_pieces:
-                                # If it is a Black Piece, check Bottom-Left of it
-                                new_pos_x1 = new_pos_x + 1
-                                new_pos_y11 = new_pos_y1 - 1
-                                # If Bottom-Left of the Black Piece isn't out of bounds...
-                                if valid_pos(new_pos_x1) and valid_pos(new_pos_y11):
-                                    # If Bottom-Left of the Black Piece is empty,
-                                    # save its coords.
-                                    if self.matrix[new_pos_x1][new_pos_y11].is_empty():
-                                        white_moves.append((new_pos_x1, new_pos_y11))
-                    # If can go down, but going left is out of bounds.
-                    # for a White Soldier Piece both Bottom-Left and Bottom-Right can't be out of bounds at the same time.
-                    if valid_pos(new_pos_y2):
-                        # If the cell in Bottom-Right is empty, can move to it.
-                        # save its coords.
-                        if self.matrix[new_pos_x][new_pos_y2].is_empty():
-                            white_moves.append((new_pos_x, new_pos_y2))
-                        # If the cell in Bottom-Right isn't empty...
-                        else:
-                            # Check if the piece in Bottom-Right is a Black Piece
-                            new_pos = (new_pos_x, new_pos_y2)
-                            if new_pos in self.black_pieces:
-                                # If it is a Black Piece, check Bottom-Right of it
-                                new_pos_x1 = new_pos_x + 1
-                                new_pos_y22 = new_pos_y2 + 1
-                                # If Top-Right of the White Piece isn't out of bounds...
-                                if valid_pos(new_pos_x1) and valid_pos(new_pos_y22):
-                                    # If Bottom-Right of the Black Piece is empty,
-                                    # save its coords
-                                    if self.matrix[new_pos_x1][new_pos_y22].is_empty():
-                                        white_moves.append((new_pos_x1, new_pos_y22))
-                return white_moves
-        # If it isn't a Soldier Piece it is a King Piece
+                new_x_pos.append(piece_pos_x + 1)
+                x_dirs.append(1)
         else:
-            new_pos_x1 = piece_pos_x - 1
-            new_pos_x2 = piece_pos_x + 1
-            new_pos_y1 = piece_pos_y - 1
-            new_pos_y2 = piece_pos_y + 1
-            if piece_color == 'B':
-                black_king_moves = []
-                if valid_pos(new_pos_x1):
-                    if valid_pos(new_pos_y1):
-                        if self.matrix[new_pos_x1][new_pos_y1].is_empty():
-                            black_king_moves.append((new_pos_x1, new_pos_y1))
+            new_x_pos.append(piece_pos_x - 1)
+            new_x_pos.append(piece_pos_x + 1)
+            x_dirs.append(-1)
+            x_dirs.append(1)
+        y_dirs = [-1, 1]
+        new_y_pos = [piece_pos_y - 1, piece_pos_y + 1]
+        
+        for new_x in new_x_pos:
+            if valid_pos(new_x):
+                for new_y in new_y_pos:
+                    if valid_pos(new_y):
+                        if self.matrix[new_x][new_y].is_empty():
+                            moves.append((new_x, new_y))
                         else:
-                            new_pos = (new_pos_x1, new_pos_y1)
-                            if new_pos in self.white_pieces:
-                                new_pos_x11 = new_pos_x1 - 1
-                                new_pos_y11 = new_pos_y1 - 1
-                                if valid_pos(new_pos_x11) and valid_pos(new_pos_y11):
-                                    if self.matrix[new_pos_x11][new_pos_y11].is_empty():
-                                        black_king_moves.append((new_pos_x11, new_pos_y11))
-                    if valid_pos(new_pos_y2):
-                        if self.matrix[new_pos_x1][new_pos_y2].is_empty():
-                            black_king_moves.append((new_pos_x1, new_pos_y2))
-                        else:
-                            new_pos = (new_pos_x1, new_pos_y2)
-                            if new_pos in self.white_pieces:
-                                new_pos_x11 = new_pos_x1 - 1
-                                new_pos_y22 = new_pos_y2 + 1
-                                if valid_pos(new_pos_x11) and valid_pos(new_pos_y22):
-                                    if self.matrix[new_pos_x11][new_pos_y22].is_empty():
-                                        black_king_moves.append((new_pos_x11, new_pos_y22))
-                if valid_pos(new_pos_x2):
-                    if valid_pos(new_pos_y1):
-                        if self.matrix[new_pos_x2][new_pos_y1].is_empty():
-                            black_king_moves.append((new_pos_x2, new_pos_y1))
-                        else:
-                            new_pos = (new_pos_x2, new_pos_y1)
-                            if new_pos in self.white_pieces:
-                                new_pos_x22 = new_pos_x2 + 1
-                                new_pos_y11 = new_pos_y1 - 1
-                                if valid_pos(new_pos_x22) and valid_pos(new_pos_y11):
-                                    if self.matrix[new_pos_x22][new_pos_y11].is_empty():
-                                        black_king_moves.append((new_pos_x22, new_pos_y11))
-                    if valid_pos(new_pos_y2):
-                        if self.matrix[new_pos_x2][new_pos_y2].is_empty():
-                            black_king_moves.append((new_pos_x2, new_pos_y2))
-                        else:
-                            new_pos = (new_pos_x2, new_pos_y2)
-                            if new_pos in self.white_pieces:
-                                new_pos_x22 = new_pos_x2 + 1
-                                new_pos_y22 = new_pos_y2 + 1
-                                if valid_pos(new_pos_x22) and valid_pos(new_pos_y22):
-                                    if self.matrix[new_pos_x22][new_pos_y22].is_empty():
-                                        black_king_moves.append((new_pos_x22, new_pos_y22))
-            else:
-                white_king_moves = []
-                if valid_pos(new_pos_x1):
-                    if valid_pos(new_pos_y1):
-                        if self.matrix[new_pos_x1][new_pos_y1].is_empty():
-                            white_king_moves.append((new_pos_x1, new_pos_y1))
-                        else:
-                            new_pos = (new_pos_x1, new_pos_y1)
-                            if new_pos in self.black_pieces:
-                                new_pos_x11 = new_pos_x1 - 1
-                                new_pos_y11 = new_pos_y1 - 1
-                                if valid_pos(new_pos_x11) and valid_pos(new_pos_y11):
-                                    if self.matrix[new_pos_x11][new_pos_y11].is_empty():
-                                        white_king_moves.append((new_pos_x11, new_pos_y11))
-                    if valid_pos(new_pos_y2):
-                        if self.matrix[new_pos_x1][new_pos_y2].is_empty():
-                            white_king_moves.append((new_pos_x1, new_pos_y2))
-                        else:
-                            new_pos = (new_pos_x1, new_pos_y2)
-                            if new_pos in self.black_pieces:
-                                new_pos_x11 = new_pos_x1 - 1
-                                new_pos_y22 = new_pos_y2 + 1
-                                if valid_pos(new_pos_x11) and valid_pos(new_pos_y22):
-                                    if self.matrix[new_pos_x11][new_pos_y22].is_empty():
-                                        white_king_moves.append((new_pos_x11, new_pos_y22))
-                if valid_pos(new_pos_x2):
-                    if valid_pos(new_pos_y1):
-                        if self.matrix[new_pos_x2][new_pos_y1].is_empty():
-                            white_king_moves.append((new_pos_x2, new_pos_y1))
-                        else:
-                            new_pos = (new_pos_x2, new_pos_y1)
-                            if new_pos in self.black_pieces:
-                                new_pos_x22 = new_pos_x2 + 1
-                                new_pos_y11 = new_pos_y1 - 1
-                                if valid_pos(new_pos_x22) and valid_pos(new_pos_y11):
-                                    if self.matrix[new_pos_x22][new_pos_y11].is_empty():
-                                        white_king_moves.append((new_pos_x22, new_pos_y11))
-                    if valid_pos(new_pos_y2):
-                        if self.matrix[new_pos_x2][new_pos_y2].is_empty():
-                            white_king_moves.append((new_pos_x2, new_pos_y2))
-                        else:
-                            new_pos = (new_pos_x2, new_pos_y2)
-                            if new_pos in self.black_pieces:
-                                new_pos_x22 = new_pos_x2 + 1
-                                new_pos_y22 = new_pos_y2 + 1
-                                if valid_pos(new_pos_x22) and valid_pos(new_pos_y22):
-                                    if self.matrix[new_pos_x22][new_pos_y22].is_empty():
-                                        white_king_moves.append((new_pos_x22, new_pos_y22))
+                            new_pos = (new_x, new_y)
+                            if new_pos in enemy_pieces:
+                                for x_dir in x_dirs:
+                                    next_new_x = new_x + x_dir
+                                    for y_dir in y_dirs:
+                                        next_new_y = new_y + y_dir
+                                        if valid_pos(next_new_x) and valid_pos(next_new_y):
+                                            if self.matrix[next_new_x][next_new_y].is_empty():
+                                                moves.append((next_new_x, next_new_y))
+        return moves
     
     def move(self, piece: Piece, new_pos: tuple):
         current_pos = piece.get_pos()
@@ -355,87 +194,142 @@ gboard = GameBoard()
 
 print('Black Pieces: ')
 for piece in gboard.get_black_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]), end=' - ')
+    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
     
 print('White Pieces: ')
 for piece in gboard.get_white_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]), end=' - ')
+    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
 
-print()
-print('-'*20)
 for row in gboard.get_matrix():
     for cell in row:
         print(f"{not cell.is_empty(): <3}", end=' ')
     print()
+print('-'*20)
 
 gboard.move_by_pos((5, 2), (4, 1))
 
 print('Black Pieces: ')
 for piece in gboard.get_black_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]), end=' - ')
-
-print()  
+    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
+    
 print('White Pieces: ')
 for piece in gboard.get_white_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]), end=' - ')
+    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
 
-print()
-print('-'*20)
 for row in gboard.get_matrix():
     for cell in row:
         print(f"{not cell.is_empty(): <3}", end=' ')
     print()
-    
+print('-'*20)
+   
 gboard.move_by_pos((2, 1), (3, 0))
 
 print('Black Pieces: ')
 for piece in gboard.get_black_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]), end=' - ')
-   
-print() 
+    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
+    
 print('White Pieces: ')
 for piece in gboard.get_white_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]), end=' - ')
+    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
 
-print()
-print('-'*20)
 for row in gboard.get_matrix():
     for cell in row:
         print(f"{not cell.is_empty(): <3}", end=' ')
     print()
+print('-'*20)
     
 gboard.move_by_pos((5, 4), (4, 3))
 
 print('Black Pieces: ')
 for piece in gboard.get_black_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]), end=' - ')
+    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
     
-print()
 print('White Pieces: ')
 for piece in gboard.get_white_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]), end=' - ')
+    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
 
-print()
-print('-'*20)
 for row in gboard.get_matrix():
     for cell in row:
         print(f"{not cell.is_empty(): <3}", end=' ')
     print()
+print('-'*20)
     
 gboard.move_by_pos((3, 0), (5, 2))
 
 print('Black Pieces: ')
 for piece in gboard.get_black_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]), end=' - ')
+    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
     
-print()
 print('White Pieces: ')
 for piece in gboard.get_white_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]), end=' - ')
+    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
 
-print()
-print('-'*20)
 for row in gboard.get_matrix():
     for cell in row:
-        print(f"{not cell.is_empty(): <3}", end=' ')
+        print(f"{not cell.is_empty() : <3}", end=' ')
     print()
+print('-'*20)
+    
+gboard.move_by_pos((5, 0), (4, 1))
+gboard.move_by_pos((4, 1), (3, 2))
+gboard.move_by_pos((6, 1), (5, 0))
+gboard.move_by_pos((5, 0), (4, 1))
+gboard.move_by_pos((4, 1), (3, 0))
+gboard.move_by_pos((7, 0), (6, 1))
+gboard.move_by_pos((6, 1), (5, 0))
+gboard.move_by_pos((5, 2), (6, 1))
+
+print('Black Pieces: ')
+for piece in gboard.get_black_pieces():
+    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
+    
+print('White Pieces: ')
+for piece in gboard.get_white_pieces():
+    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
+
+for row in gboard.get_matrix():
+    for cell in row:
+        print(f"{not cell.is_empty() : <3}", end=' ')
+    print()
+print('-'*20)
+    
+gboard.move_by_pos((6, 1), (7, 0))
+
+print('Black Pieces: ')
+for piece in gboard.get_black_pieces():
+    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
+    
+print('White Pieces: ')
+for piece in gboard.get_white_pieces():
+    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
+
+for row in gboard.get_matrix():
+    for cell in row:
+        print(f"{not cell.is_empty() : <3}", end=' ')
+    print()
+    
+print(gboard.pos_info((4, 3)))
+print(gboard.pos_info((7, 2)))
+print(gboard.pos_info((7, 0)))
+
+print('-'*20)
+
+gboard.move_by_pos((7, 0), (6, 1))
+gboard.move_by_pos((6, 1), (5, 2))
+gboard.move_by_pos((5, 2), (3, 4))
+
+print('Black Pieces: ')
+for piece in gboard.get_black_pieces():
+    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
+    
+print('White Pieces: ')
+for piece in gboard.get_white_pieces():
+    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
+
+for row in gboard.get_matrix():
+    for cell in row:
+        print(f"{not cell.is_empty() : <3}", end=' ')
+    print()
+    
+print(gboard.pos_info((3, 4)))
+print('-'*20)
