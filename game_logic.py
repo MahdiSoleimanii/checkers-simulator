@@ -47,7 +47,11 @@ class Piece:
         self.isSoldier = False
         
     def info(self):
-        return f"Position: {self.get_pos()}\nColor: {self.get_color()}\nRole: {"Soldier" if self.is_soldier() else "King"}"
+        position = "Position: " + str(self.get_pos()) + "\n"
+        color = "Color: " + str(self.get_color()) + "\n"
+        role = "Soldier" if self.is_soldier() else "King"
+        info_str = position + color + role
+        return info_str
         
 class GameBoard:
     def __init__(self):
