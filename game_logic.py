@@ -160,12 +160,7 @@ class GameBoard:
                     mid_piece_pos = (mid_piece_x, mid_piece_y)
                     self.black_pieces.pop(mid_piece_pos)
                     self.matrix[mid_piece_x][mid_piece_y].change_state()
-                    if mid_piece_pos in self.black_pieces:
-                        self.black_pieces.pop(mid_piece_pos)
-                        self.matrix[mid_piece_x][mid_piece_y].change_state()
-                    elif mid_piece_pos in self.white_pieces:
-                        self.white_pieces.pop(mid_piece_pos)
-                        self.matrix[mid_piece_x][mid_piece_y].change_state()
+
     def move_by_pos(self, piece_pos: tuple, new_pos: tuple):
         if piece_pos in self.black_pieces:
             self.move(self.black_pieces[piece_pos], new_pos)
