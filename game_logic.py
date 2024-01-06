@@ -160,7 +160,12 @@ class GameBoard:
                     mid_piece_pos = (mid_piece_x, mid_piece_y)
                     self.black_pieces.pop(mid_piece_pos)
                     self.matrix[mid_piece_x][mid_piece_y].change_state()
-                    
+                    if mid_piece_pos in self.black_pieces:
+                        self.black_pieces.pop(mid_piece_pos)
+                        self.matrix[mid_piece_x][mid_piece_y].change_state()
+                    elif mid_piece_pos in self.white_pieces:
+                        self.white_pieces.pop(mid_piece_pos)
+                        self.matrix[mid_piece_x][mid_piece_y].change_state()
     def move_by_pos(self, piece_pos: tuple, new_pos: tuple):
         if piece_pos in self.black_pieces:
             self.move(self.black_pieces[piece_pos], new_pos)
@@ -189,146 +194,146 @@ class GameBoard:
 
         return empty_cells_list
 
-gboard = GameBoard()
+# gboard = GameBoard()
 
-print('Black Pieces: ')
-for piece in gboard.get_black_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
+# print('Black Pieces: ')
+# for piece in gboard.get_black_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
     
-print('White Pieces: ')
-for piece in gboard.get_white_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
+# print('White Pieces: ')
+# for piece in gboard.get_white_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
 
-for row in gboard.get_matrix():
-    for cell in row:
-        print(f"{not cell.is_empty(): <3}", end=' ')
-    print()
-print('-'*20)
+# for row in gboard.get_matrix():
+#     for cell in row:
+#         print(f"{not cell.is_empty(): <3}", end=' ')
+#     print()
+# print('-'*20)
 
-gboard.move_by_pos((5, 2), (4, 1))
+# gboard.move_by_pos((5, 2), (4, 1))
 
-print('Black Pieces: ')
-for piece in gboard.get_black_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
+# print('Black Pieces: ')
+# for piece in gboard.get_black_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
     
-print('White Pieces: ')
-for piece in gboard.get_white_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
+# print('White Pieces: ')
+# for piece in gboard.get_white_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
 
-for row in gboard.get_matrix():
-    for cell in row:
-        print(f"{not cell.is_empty(): <3}", end=' ')
-    print()
-print('-'*20)
+# for row in gboard.get_matrix():
+#     for cell in row:
+#         print(f"{not cell.is_empty(): <3}", end=' ')
+#     print()
+# print('-'*20)
    
-gboard.move_by_pos((2, 1), (3, 0))
+# gboard.move_by_pos((2, 1), (3, 0))
 
-print('Black Pieces: ')
-for piece in gboard.get_black_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
+# print('Black Pieces: ')
+# for piece in gboard.get_black_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
     
-print('White Pieces: ')
-for piece in gboard.get_white_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
+# print('White Pieces: ')
+# for piece in gboard.get_white_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
 
-for row in gboard.get_matrix():
-    for cell in row:
-        print(f"{not cell.is_empty(): <3}", end=' ')
-    print()
-print('-'*20)
+# for row in gboard.get_matrix():
+#     for cell in row:
+#         print(f"{not cell.is_empty(): <3}", end=' ')
+#     print()
+# print('-'*20)
     
-gboard.move_by_pos((5, 4), (4, 3))
+# gboard.move_by_pos((5, 4), (4, 3))
 
-print('Black Pieces: ')
-for piece in gboard.get_black_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
+# print('Black Pieces: ')
+# for piece in gboard.get_black_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
     
-print('White Pieces: ')
-for piece in gboard.get_white_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
+# print('White Pieces: ')
+# for piece in gboard.get_white_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
 
-for row in gboard.get_matrix():
-    for cell in row:
-        print(f"{not cell.is_empty(): <3}", end=' ')
-    print()
-print('-'*20)
+# for row in gboard.get_matrix():
+#     for cell in row:
+#         print(f"{not cell.is_empty(): <3}", end=' ')
+#     print()
+# print('-'*20)
     
-gboard.move_by_pos((3, 0), (5, 2))
+# gboard.move_by_pos((3, 0), (5, 2))
 
-print('Black Pieces: ')
-for piece in gboard.get_black_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
+# print('Black Pieces: ')
+# for piece in gboard.get_black_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
     
-print('White Pieces: ')
-for piece in gboard.get_white_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
+# print('White Pieces: ')
+# for piece in gboard.get_white_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
 
-for row in gboard.get_matrix():
-    for cell in row:
-        print(f"{not cell.is_empty() : <3}", end=' ')
-    print()
-print('-'*20)
+# for row in gboard.get_matrix():
+#     for cell in row:
+#         print(f"{not cell.is_empty() : <3}", end=' ')
+#     print()
+# print('-'*20)
     
-gboard.move_by_pos((5, 0), (4, 1))
-gboard.move_by_pos((4, 1), (3, 2))
-gboard.move_by_pos((6, 1), (5, 0))
-gboard.move_by_pos((5, 0), (4, 1))
-gboard.move_by_pos((4, 1), (3, 0))
-gboard.move_by_pos((7, 0), (6, 1))
-gboard.move_by_pos((6, 1), (5, 0))
-gboard.move_by_pos((5, 2), (6, 1))
+# gboard.move_by_pos((5, 0), (4, 1))
+# gboard.move_by_pos((4, 1), (3, 2))
+# gboard.move_by_pos((6, 1), (5, 0))
+# gboard.move_by_pos((5, 0), (4, 1))
+# gboard.move_by_pos((4, 1), (3, 0))
+# gboard.move_by_pos((7, 0), (6, 1))
+# gboard.move_by_pos((6, 1), (5, 0))
+# gboard.move_by_pos((5, 2), (6, 1))
 
-print('Black Pieces: ')
-for piece in gboard.get_black_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
+# print('Black Pieces: ')
+# for piece in gboard.get_black_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
     
-print('White Pieces: ')
-for piece in gboard.get_white_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
+# print('White Pieces: ')
+# for piece in gboard.get_white_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
 
-for row in gboard.get_matrix():
-    for cell in row:
-        print(f"{not cell.is_empty() : <3}", end=' ')
-    print()
-print('-'*20)
+# for row in gboard.get_matrix():
+#     for cell in row:
+#         print(f"{not cell.is_empty() : <3}", end=' ')
+#     print()
+# print('-'*20)
     
-gboard.move_by_pos((6, 1), (7, 0))
+# gboard.move_by_pos((6, 1), (7, 0))
 
-print('Black Pieces: ')
-for piece in gboard.get_black_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
+# print('Black Pieces: ')
+# for piece in gboard.get_black_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
     
-print('White Pieces: ')
-for piece in gboard.get_white_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
+# print('White Pieces: ')
+# for piece in gboard.get_white_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
 
-for row in gboard.get_matrix():
-    for cell in row:
-        print(f"{not cell.is_empty() : <3}", end=' ')
-    print()
+# for row in gboard.get_matrix():
+#     for cell in row:
+#         print(f"{not cell.is_empty() : <3}", end=' ')
+#     print()
     
-print(gboard.pos_info((4, 3)))
-print(gboard.pos_info((7, 2)))
-print(gboard.pos_info((7, 0)))
+# print(gboard.pos_info((4, 3)))
+# print(gboard.pos_info((7, 2)))
+# print(gboard.pos_info((7, 0)))
 
-print('-'*20)
+# print('-'*20)
 
-gboard.move_by_pos((7, 0), (6, 1))
-gboard.move_by_pos((6, 1), (5, 2))
-gboard.move_by_pos((5, 2), (3, 4))
+# gboard.move_by_pos((7, 0), (6, 1))
+# gboard.move_by_pos((6, 1), (5, 2))
+# gboard.move_by_pos((5, 2), (3, 4))
 
-print('Black Pieces: ')
-for piece in gboard.get_black_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
+# print('Black Pieces: ')
+# for piece in gboard.get_black_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_black_pieces()[piece]))
     
-print('White Pieces: ')
-for piece in gboard.get_white_pieces():
-    print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
+# print('White Pieces: ')
+# for piece in gboard.get_white_pieces():
+#     print(piece, gboard.piece_can_move(gboard.get_white_pieces()[piece]))
 
-for row in gboard.get_matrix():
-    for cell in row:
-        print(f"{not cell.is_empty() : <3}", end=' ')
-    print()
+# for row in gboard.get_matrix():
+#     for cell in row:
+#         print(f"{not cell.is_empty() : <3}", end=' ')
+#     print()
     
-print(gboard.pos_info((3, 4)))
-print('-'*20)
+# print(gboard.pos_info((3, 4)))
+# print('-'*20)
