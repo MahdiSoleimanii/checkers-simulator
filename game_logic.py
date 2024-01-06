@@ -175,6 +175,9 @@ class GameBoard:
         else:
             self.move(self.white_pieces[piece_pos], new_pos)
     
+    def game_ended(self):
+        return self.black_pieces == {} or self.white_pieces == {}
+    
     def get_matrix(self):
         return self.matrix
     
