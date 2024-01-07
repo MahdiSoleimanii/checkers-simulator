@@ -188,6 +188,27 @@ class GameBoard:
                     empty_cells_list.append(cell)
 
         return empty_cells_list
+    
+    def print_board(self):
+        print('-'*30)
+        for i in range(len(self.get_matrix())):
+            for j in range(len(self.get_matrix()[i])):
+                cell = self.get_matrix()[i][j]
+                if cell.is_empty():
+                    print(f'{'-':<3}', end=' ')
+                else:
+                    if (i, j) in self.get_black_pieces():
+                        if self.get_black_pieces()[(i, j)].is_soldier():
+                            print(f'{'♟':<3}', end=' ')
+                        else:
+                            print(f'{'♚':<3}', end=' ')
+                    else:
+                        if self.get_white_pieces()[(i, j)].is_soldier():
+                            print(f'{'♙':<3}', end=' ')
+                        else:
+                            print(f'{'♔':<3}', end=' ')
+            print()
+        print('-'*30)
 
 # gboard = GameBoard()
 
