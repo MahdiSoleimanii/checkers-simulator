@@ -26,7 +26,7 @@ def evaluate_board(board: GameBoard, depth: int):
         return simple_evaluation(board)
             
     best_value = float('-inf')
-    value = minimax(board, depth, True)
+    value = minimax_alphabeta(board, depth, True, float('-inf'), float('inf'))
     best_value = max(best_value, value)
 
     return best_value
@@ -52,36 +52,79 @@ def minimax(board: GameBoard, depth: int, isMaximizing: bool):
     if isMaximizing:
         black_pieces = board.get_black_pieces()
         legal_moves = {}
-        max_eval = float('-inf')
         for piece in black_pieces:
-            legal_moves[black_pieces[piece]] = board.piece_can_move(black_pieces[piece])
+            if board.piece_can_move(black_pieces[piece]):
+                legal_moves[black_pieces[piece]] = board.piece_can_move(black_pieces[piece])
         for piece in legal_moves:
+            max_eval = float('-inf')
             for pos in legal_moves[piece]:
                 board_copy = copy.deepcopy(board)
                 piece_copy = copy.deepcopy(piece)
                 board_copy.move(piece_copy, pos)
                 eval = minimax(board_copy, depth - 1, False)
                 max_eval = max(max_eval, eval)
-        return max_eval
+            return max_eval
     else:
         white_pieces = board.get_white_pieces()
         legal_moves = {}
-        min_eval = float('inf')
         for piece in white_pieces:
-            legal_moves[white_pieces[piece]] = board.piece_can_move(white_pieces[piece])
+            if board.piece_can_move(white_pieces[piece]):
+                legal_moves[white_pieces[piece]] = board.piece_can_move(white_pieces[piece])
         for piece in legal_moves:
+            min_eval = float('inf')
             for pos in legal_moves[piece]:
                 board_copy = copy.deepcopy(board)
                 piece_copy = copy.deepcopy(piece)
                 board_copy.move(piece_copy, pos)
                 eval = minimax(board_copy, depth - 1, True)
                 min_eval = min(min_eval, eval)
-        return min_eval
+            return min_eval
+        
+def minimax_alphabeta(board: GameBoard, depth: int, isMaximizing: bool, alpha, beta):
+    if depth == 0 or board.game_ended():
+        return simple_evaluation(board)
+    
+    if isMaximizing:
+        black_pieces = board.get_black_pieces()
+        legal_moves = {}
+        for piece in black_pieces:
+            if board.piece_can_move(black_pieces[piece]):
+                legal_moves[black_pieces[piece]] = board.piece_can_move(black_pieces[piece])
+        for piece in legal_moves:
+            max_eval = float('-inf')
+            for pos in legal_moves[piece]:
+                board_copy = copy.deepcopy(board)
+                piece_copy = copy.deepcopy(piece)
+                board_copy.move(piece_copy, pos)
+                eval = minimax(board_copy, depth - 1, False)
+                max_eval = max(max_eval, eval)
+                alpha = max(alpha, eval)
+                if beta <= alpha:
+                    break
+            return max_eval
+    else:
+        white_pieces = board.get_white_pieces()
+        legal_moves = {}
+        for piece in white_pieces:
+            if board.piece_can_move(white_pieces[piece]):
+                legal_moves[white_pieces[piece]] = board.piece_can_move(white_pieces[piece])
+        for piece in legal_moves:
+            min_eval = float('inf')
+            for pos in legal_moves[piece]:
+                board_copy = copy.deepcopy(board)
+                piece_copy = copy.deepcopy(piece)
+                board_copy.move(piece_copy, pos)
+                eval = minimax(board_copy, depth - 1, True)
+                min_eval = min(min_eval, eval)
+                beta = min(beta, eval)
+                if beta <= alpha:
+                    break 
+            return min_eval
 
 gboard = GameBoard()
 
 gboard.print_board()
 
-result = start(gboard, 3)
+result = start(gboard, 15)
 
 result.print_board()
