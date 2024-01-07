@@ -92,21 +92,15 @@ class GameBoard:
         piece_color = piece.get_color()
         enemy_pieces = self.white_pieces if piece_color == 'B' else self.black_pieces
 
-        x_dirs = []
         new_x_pos = []
         if piece.is_soldier():
             if piece_color == 'B':
                 new_x_pos.append(piece_pos_x - 1)
-                x_dirs.append(-1)
             else:
                 new_x_pos.append(piece_pos_x + 1)
-                x_dirs.append(1)
         else:
             new_x_pos.append(piece_pos_x - 1)
             new_x_pos.append(piece_pos_x + 1)
-            x_dirs.append(-1)
-            x_dirs.append(1)
-        y_dirs = [-1, 1]
         new_y_pos = [piece_pos_y - 1, piece_pos_y + 1]
         
         for new_x in new_x_pos:
@@ -118,13 +112,11 @@ class GameBoard:
                         else:
                             new_pos = (new_x, new_y)
                             if new_pos in enemy_pieces:
-                                for x_dir in x_dirs:
-                                    next_new_x = new_x + x_dir
-                                    for y_dir in y_dirs:
-                                        next_new_y = new_y + y_dir
-                                        if valid_pos(next_new_x) and valid_pos(next_new_y):
-                                            if self.matrix[next_new_x][next_new_y].is_empty():
-                                                moves.append((next_new_x, next_new_y))
+                                next_new_x = new_x + (new_x - piece_pos_x)
+                                next_new_y = new_y + (new_y - piece_pos_y)
+                                if valid_pos(next_new_x) and valid_pos(next_new_y):
+                                    if self.matrix[next_new_x][next_new_y].is_empty():
+                                        moves.append((next_new_x, next_new_y))
         return moves
     
     def move(self, piece: Piece, new_pos: tuple):
@@ -168,12 +160,7 @@ class GameBoard:
                     mid_piece_pos = (mid_piece_x, mid_piece_y)
                     self.black_pieces.pop(mid_piece_pos)
                     self.matrix[mid_piece_x][mid_piece_y].change_state()
-                    if mid_piece_pos in self.black_pieces:
-                        self.black_pieces.pop(mid_piece_pos)
-                        self.matrix[mid_piece_x][mid_piece_y].change_state()
-                    elif mid_piece_pos in self.white_pieces:
-                        self.white_pieces.pop(mid_piece_pos)
-                        self.matrix[mid_piece_x][mid_piece_y].change_state()
+
     def move_by_pos(self, piece_pos: tuple, new_pos: tuple):
         if piece_pos in self.black_pieces:
             self.move(self.black_pieces[piece_pos], new_pos)
