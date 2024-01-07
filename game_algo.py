@@ -1,25 +1,35 @@
 import copy
-from game_log import *
+from game_logic import *
 
-def evaluate_board(board: GameBoard, depth: int):
-    if depth == 0 or board.game_ended():
-        return simple_evaluation(board)
-
-    movable_pieces = []
+def start(board: GameBoard, depth: int):
+    movable_pieces = {}
     white_pieces = board.get_white_pieces()
     for piece in white_pieces:
         if board.piece_can_move(white_pieces[piece]):
-            movable_pieces.append(white_pieces[piece])
+            movable_pieces[white_pieces[piece]] = board.piece_can_move(white_pieces[piece])
+
+    boards = []
+    points = []
+    for piece in movable_pieces.keys():
+        for pos in movable_pieces[piece]:
+            piece_copy = copy.deepcopy(piece)
+            board_copy = copy.deepcopy(board)
+            board_copy.move(piece_copy, pos)
+            points.append(evaluate_board(board_copy, depth))
+            boards.append(board_copy)
+    for i in range(len(points)):
+        if points[i] == max(points):
+            return boards[i]
+    
+def evaluate_board(board: GameBoard, depth: int):
+    if depth == 0 or board.game_ended():
+        return simple_evaluation(board)
             
     best_value = float('-inf')
-    for piece in movable_pieces:
-        board_copy = copy.deepcopy(board)
-        piece_copy = copy.deepcopy(piece)
-        value = minimax(board_copy, depth - 1, piece_copy)
-        best_value = max(best_value, value)
+    value = minimax(board, depth, True)
+    best_value = max(best_value, value)
 
     return best_value
-
 
 def simple_evaluation(board: GameBoard):
     SOLDIER_VALUE = 1
@@ -35,53 +45,43 @@ def simple_evaluation(board: GameBoard):
     return eval_score
 
 
-def minimax(board: GameBoard, depth: int, piece: Piece):
-    # print(depth)
-    # print(piece.info())
-    # print(simple_evaluation(board))
-    # print()
-    
+def minimax(board: GameBoard, depth: int, isMaximizing: bool):
     if depth == 0 or board.game_ended():
         return simple_evaluation(board)
-
-    legal_moves = board.piece_can_move(piece)
-    if piece.get_color() != 'B':
+    
+    if isMaximizing:
+        black_pieces = board.get_black_pieces()
+        legal_moves = {}
         max_eval = float('-inf')
-        for new_pos in legal_moves:
-            board_copy = copy.deepcopy(board)
-            piece_copy = copy.deepcopy(piece)
-            board_copy.move(piece_copy, new_pos)
-            # print(piece_copy.info(), simple_evaluation(board_copy))
-            # print()
-            black_pieces = board_copy.get_black_pieces()
-            for bpiece in black_pieces:
-                if board_copy.piece_can_move(black_pieces[bpiece]):
-                    eval = minimax(board_copy, depth - 1, black_pieces[bpiece])
-                    max_eval = max(max_eval, eval)
+        for piece in black_pieces:
+            legal_moves[black_pieces[piece]] = board.piece_can_move(black_pieces[piece])
+        for piece in legal_moves:
+            for pos in legal_moves[piece]:
+                board_copy = copy.deepcopy(board)
+                piece_copy = copy.deepcopy(piece)
+                board_copy.move(piece_copy, pos)
+                eval = minimax(board_copy, depth - 1, False)
+                max_eval = max(max_eval, eval)
         return max_eval
     else:
+        white_pieces = board.get_white_pieces()
+        legal_moves = {}
         min_eval = float('inf')
-        for new_pos in legal_moves:
-            board_copy = copy.deepcopy(board)
-            piece_copy = copy.deepcopy(piece)
-            board_copy.move(piece_copy, new_pos)
-            # print(piece_copy.info(), simple_evaluation(board_copy))
-            # print()
-            white_pieces = board_copy.get_white_pieces()
-            for wpiece in white_pieces:
-                if board_copy.piece_can_move(white_pieces[wpiece]):
-                    eval = minimax(board_copy, depth - 1, white_pieces[wpiece])
-                    min_eval = min(min_eval, eval)
+        for piece in white_pieces:
+            legal_moves[white_pieces[piece]] = board.piece_can_move(white_pieces[piece])
+        for piece in legal_moves:
+            for pos in legal_moves[piece]:
+                board_copy = copy.deepcopy(board)
+                piece_copy = copy.deepcopy(piece)
+                board_copy.move(piece_copy, pos)
+                eval = minimax(board_copy, depth - 1, True)
+                min_eval = min(min_eval, eval)
         return min_eval
-
 
 gboard = GameBoard()
 
-result = evaluate_board(gboard, depth=5)
-print("Evaluation Result:", result)
+gboard.print_board()
 
-def print_board(board):
-        matrix = board.get_matrix()
-        for row in matrix:
-            print(" ".join([cell.get_color() if not cell.is_empty() else '.' for cell in row]))
-        print()
+result = start(gboard, 3)
+
+result.print_board()
