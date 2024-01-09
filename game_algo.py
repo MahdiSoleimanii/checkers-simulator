@@ -24,14 +24,11 @@ class Checkers:
         if depth == 0 or board.game_ended():
             return self.heuristic(board, player)
         
-        player_pieces = board.get_black_pieces().values() if player == 'B' else board.get_white_pieces().values()
-        enemy_pieces = board.get_white_pieces().values() if player == 'B' else board.get_black_pieces().values()
-        
         possible_moves = {}
         if isMaximizing:
-            for piece in player_pieces:
-                if board.piece_can_move(piece):
-                    possible_moves[piece] = board.piece_can_move(piece)
+            enemy_pieces = board.get_white_pieces().values() if player == 'B' else board.get_black_pieces().values()
+            for piece in enemy_pieces:
+                possible_moves[piece] = board.piece_can_move(piece)
             
             max_eval = float('-inf')
             for piece in possible_moves.keys():
@@ -39,21 +36,21 @@ class Checkers:
                     board_copy = copy.deepcopy(board)
                     piece_copy = copy.deepcopy(piece)
                     board_copy.move(piece_copy, pos)
-                    eval = self.minimax_alphabeta(board_copy, player, depth - 1, False)
+                    eval = self.minimax(board_copy, player, depth - 1, False)
                     max_eval = max(max_eval, eval)
             return max_eval
         else:
-            for piece in enemy_pieces:
-                if board.piece_can_move(piece):
-                    possible_moves[piece] = board.piece_can_move(piece)
+            player_pieces = board.get_black_pieces().values() if player == 'B' else board.get_white_pieces().values()
+            for piece in player_pieces:
+                possible_moves[piece] = board.piece_can_move(piece)
             
-            min_eval = float('-inf')
+            min_eval = float('inf')
             for piece in possible_moves.keys():
                 for pos in possible_moves[piece]:
                     board_copy = copy.deepcopy(board)
                     piece_copy = copy.deepcopy(piece)
                     board_copy.move(piece_copy, pos)
-                    eval = self.minimax_alphabeta(board_copy, player, depth - 1, True)
+                    eval = self.minimax(board_copy, player, depth - 1, True)
                     min_eval = min(min_eval, eval)
             return min_eval
         
@@ -61,36 +58,33 @@ class Checkers:
         if depth == 0 or board.game_ended():
             return self.heuristic(board, player)
         
-        player_pieces = board.get_black_pieces().values() if player == 'B' else board.get_white_pieces().values()
-        enemy_pieces = board.get_white_pieces().values() if player == 'B' else board.get_black_pieces().values()
-        
         possible_moves = {}
         if isMaximizing:
+            enemy_pieces = board.get_white_pieces().values() if player == 'B' else board.get_black_pieces().values()
             for piece in enemy_pieces:
-                if board.piece_can_move(piece):
-                    possible_moves[piece] = board.piece_can_move(piece)
+                possible_moves[piece] = board.piece_can_move(piece)
             
             for piece in possible_moves.keys():
                 for pos in possible_moves[piece]:
                     board_copy = copy.deepcopy(board)
                     piece_copy = copy.deepcopy(piece)
                     board_copy.move(piece_copy, pos)
-                    eval = self.minimax_alphabeta(board_copy, player, depth - 1, False, float('-inf'), float('inf'))
+                    eval = self.minimax_alphabeta(board_copy, player, depth - 1, False, alpha, beta)
                     alpha = max(alpha, eval)
                     if beta <= alpha:
                         break
             return alpha
         else:
+            player_pieces = board.get_black_pieces().values() if player == 'B' else board.get_white_pieces().values()
             for piece in player_pieces:
-                if board.piece_can_move(piece):
-                    possible_moves[piece] = board.piece_can_move(piece)
+                possible_moves[piece] = board.piece_can_move(piece)
             
             for piece in possible_moves.keys():
                 for pos in possible_moves[piece]:
                     board_copy = copy.deepcopy(board)
                     piece_copy = copy.deepcopy(piece)
                     board_copy.move(piece_copy, pos)
-                    eval = self.minimax_alphabeta(board_copy, player, depth - 1, True, float('-inf'), float('inf'))
+                    eval = self.minimax_alphabeta(board_copy, player, depth - 1, True, alpha, beta)
                     beta = min(beta, eval)
                     if beta <= alpha:
                         break
@@ -99,15 +93,12 @@ class Checkers:
     def beam_search(self, board: GameBoard, player: str, depth: int, isMaximizing: bool, alpha, beta, beam_width: int):
         if depth == 0 or board.game_ended():
             return self.heuristic(board, player)
-
-        player_pieces = board.get_black_pieces().values() if player == 'B' else board.get_white_pieces().values()
-        enemy_pieces = board.get_white_pieces().values() if player == 'B' else board.get_black_pieces().values()
         
         possible_moves = {}
         if isMaximizing:
+            enemy_pieces = board.get_white_pieces().values() if player == 'B' else board.get_black_pieces().values()
             for piece in enemy_pieces:
-                if board.piece_can_move(piece):
-                    possible_moves[piece] = board.piece_can_move(piece)
+                possible_moves[piece] = board.piece_can_move(piece)
 
             beam_states = []  
             for piece in possible_moves.keys():
@@ -115,8 +106,10 @@ class Checkers:
                     board_copy = copy.deepcopy(board)
                     piece_copy = copy.deepcopy(piece)
                     board_copy.move(piece_copy, pos)
-                    eval = self.minimax_alphabeta(board_copy, player, depth - 1, False, float('-inf'), float('inf'))
+                    eval = self.minimax_alphabeta(board_copy, player, depth - 1, False, alpha, beta)
                     alpha = max(alpha, eval)
+                    if beta <= alpha:
+                        break
                     beam_states.append((eval, board_copy))  
 
             beam_states.sort(reverse=True, key=lambda x: x[0])
@@ -129,9 +122,9 @@ class Checkers:
                 
             return alpha
         else:
+            player_pieces = board.get_black_pieces().values() if player == 'B' else board.get_white_pieces().values()
             for piece in player_pieces:
-                if board.piece_can_move(piece):
-                    possible_moves[piece] = board.piece_can_move(piece)
+                possible_moves[piece] = board.piece_can_move(piece)
 
             beam_states = []
             for piece in possible_moves.keys():
@@ -139,7 +132,7 @@ class Checkers:
                     board_copy = copy.deepcopy(board)
                     piece_copy = copy.deepcopy(piece)
                     board_copy.move(piece_copy, pos)
-                    eval = self.minimax_alphabeta(board_copy, player, depth - 1, True, float('-inf'), float('inf'))
+                    eval = self.minimax_alphabeta(board_copy, player, depth - 1, True, alpha, beta)
                     beta = min(beta, eval)
                     beam_states.append((eval, board_copy))  
             
@@ -148,8 +141,6 @@ class Checkers:
 
             for _, state in beam_states:
                 alpha = max(alpha, self.beam_search(state, player, depth - 1, True, alpha, beta, beam_width))
-                if beta <= alpha:
-                    break
                  
             return beta
     
@@ -194,20 +185,18 @@ class Checkers:
                 turn = not turn
                 if player == 'W':
                     self.game_board = self.play(self.game_board, 'W', WHITE_DEPTH)
-                    steps.append(self.game_board)
                 else:
                     self.game_board = self.play(self.game_board, 'B', BLACK_DEPTH)
-                    steps.append(self.game_board)
+                steps.append(self.game_board)
         else:
             for _ in range(rounds):
                 player = 'W' if turn else 'B'
                 turn = not turn
                 if player == 'W':
                     self.game_board = self.play(self.game_board, 'W', WHITE_DEPTH)
-                    steps.append(self.game_board)
                 else:
                     self.game_board = self.play(self.game_board, 'B', BLACK_DEPTH)
-                    steps.append(self.game_board)
+                steps.append(self.game_board)
         
         return steps
                 
@@ -216,7 +205,7 @@ gboard = GameBoard()
 game = Checkers(gboard)
 
 start_time = time.time()
-result = game.start()[-1]
+result = game.start(10)[-1]
 end_time = time.time()
 
 result.print_board()
