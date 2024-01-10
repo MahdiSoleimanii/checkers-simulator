@@ -7,16 +7,31 @@ class Checkers:
         self.game_board = game_board
         self.SOLDIER_SCORE = 1
         self.KING_SCORE = 2
+        self.WHITE_DEPTH = 2
+        self.BLACK_DEPTH = 1
     
     def heuristic(self, board: GameBoard, player: str):
         eval_score = 0
-        player_pieces = board.get_black_pieces().values() if player == 'B' else board.get_white_pieces().values()
-        enemy_pieces = board.get_white_pieces().values() if player == 'B' else board.get_black_pieces().values()
+        player_pieces = []
+        enemy_pieces = []
+        if player == 'B':
+            player_pieces = board.get_black_pieces()
+            enemy_pieces = board.get_white_pieces()
+        else:
+            player_pieces = board.get_white_pieces()
+            enemy_pieces = board.get_black_pieces()
         
         for piece in enemy_pieces:
-            eval_score -= self.SOLDIER_SCORE if piece.is_soldier() else self.KING_SCORE
+            if enemy_pieces[piece].is_soldier():
+                eval_score -= self.SOLDIER_SCORE
+            else:
+                eval_score -= self.KING_SCORE
+                
         for piece in player_pieces:
-            eval_score += self.SOLDIER_SCORE if piece.is_soldier() else self.KING_SCORE
+            if player_pieces[piece].is_soldier():
+                eval_score += self.SOLDIER_SCORE
+            else:
+                eval_score += self.KING_SCORE
             
         return eval_score
     
@@ -60,34 +75,54 @@ class Checkers:
         
         possible_moves = {}
         if isMaximizing:
-            enemy_pieces = board.get_white_pieces().values() if player == 'B' else board.get_black_pieces().values()
+            enemy_pieces = []
+            if player == 'B':
+                enemy_pieces = board.get_white_pieces()
+            else:
+                enemy_pieces = board.get_black_pieces()
+                
             for piece in enemy_pieces:
-                possible_moves[piece] = board.piece_can_move(piece)
+                possible_moves[enemy_pieces[piece]] = board.piece_can_move(enemy_pieces[piece])
             
+            boards = []
             for piece in possible_moves.keys():
                 for pos in possible_moves[piece]:
                     board_copy = copy.deepcopy(board)
                     piece_copy = copy.deepcopy(piece)
                     board_copy.move(piece_copy, pos)
-                    eval = self.minimax_alphabeta(board_copy, player, depth - 1, False, alpha, beta)
-                    alpha = max(alpha, eval)
-                    if beta <= alpha:
-                        break
+                    boards.append(board_copy)
+                    
+            for board_cp in boards:
+                eval = self.minimax_alphabeta(board_cp, player, depth - 1, False, alpha, beta)
+                alpha = max(alpha, eval)
+                if beta <= alpha:
+                    break
+                beta = alpha
             return alpha
         else:
-            player_pieces = board.get_black_pieces().values() if player == 'B' else board.get_white_pieces().values()
+            player_pieces = []
+            if player == 'B':
+                player_pieces = board.get_black_pieces()
+            else:
+                player_pieces = board.get_white_pieces()
+                
             for piece in player_pieces:
-                possible_moves[piece] = board.piece_can_move(piece)
+                possible_moves[player_pieces[piece]] = board.piece_can_move(player_pieces[piece])
             
+            boards = []
             for piece in possible_moves.keys():
                 for pos in possible_moves[piece]:
                     board_copy = copy.deepcopy(board)
                     piece_copy = copy.deepcopy(piece)
                     board_copy.move(piece_copy, pos)
-                    eval = self.minimax_alphabeta(board_copy, player, depth - 1, True, alpha, beta)
-                    beta = min(beta, eval)
-                    if beta <= alpha:
-                        break
+                    boards.append(board_copy)
+                    
+            for board_cp in boards:
+                eval = self.minimax_alphabeta(board_copy, player, depth - 1, True, alpha, beta)
+                beta = min(beta, eval)
+                if beta <= alpha:
+                    break
+                alpha = beta
             return beta
     
     def beam_search(self, board: GameBoard, player: str, depth: int, isMaximizing: bool, alpha, beta, beam_width: int):
@@ -154,12 +189,15 @@ class Checkers:
         
         return best_value
     
-    def play(self, board: GameBoard, player: str, depth):
+    def play(self, board: GameBoard, player: str, depth: int):
         movable_pieces = {}
-        player_pieces = board.get_black_pieces() if player == 'B' else board.get_white_pieces()
+        player_pieces = []
+        if player == 'B':
+            player_pieces = board.get_black_pieces()
+        else:
+            player_pieces = board.get_white_pieces()
         for piece in player_pieces:
-            if board.piece_can_move(player_pieces[piece]):
-                movable_pieces[player_pieces[piece]] = board.piece_can_move(player_pieces[piece])
+            movable_pieces[player_pieces[piece]] = board.piece_can_move(player_pieces[piece])
                 
         boards = []
         points = []
@@ -174,9 +212,7 @@ class Checkers:
         return boards[points.index(max(points))]
 
     def start(self, rounds: int = 0):
-        turn = True
-        WHITE_DEPTH = 3
-        BLACK_DEPTH = 1
+        turn = False
         steps = [self.game_board]
         
         if rounds == 0:
@@ -184,18 +220,18 @@ class Checkers:
                 player = 'W' if turn else 'B'
                 turn = not turn
                 if player == 'W':
-                    self.game_board = self.play(self.game_board, 'W', WHITE_DEPTH)
+                    self.game_board = self.play(self.game_board, 'W', self.WHITE_DEPTH)
                 else:
-                    self.game_board = self.play(self.game_board, 'B', BLACK_DEPTH)
+                    self.game_board = self.play(self.game_board, 'B', self.BLACK_DEPTH)
                 steps.append(self.game_board)
         else:
             for _ in range(rounds):
                 player = 'W' if turn else 'B'
                 turn = not turn
                 if player == 'W':
-                    self.game_board = self.play(self.game_board, 'W', WHITE_DEPTH)
+                    self.game_board = self.play(self.game_board, 'W', self.WHITE_DEPTH)
                 else:
-                    self.game_board = self.play(self.game_board, 'B', BLACK_DEPTH)
+                    self.game_board = self.play(self.game_board, 'B', self.BLACK_DEPTH)
                 steps.append(self.game_board)
         
         return steps
@@ -205,8 +241,9 @@ gboard = GameBoard()
 game = Checkers(gboard)
 
 start_time = time.time()
-result = game.start(10)[-1]
+result = game.start()
 end_time = time.time()
 
-result.print_board()
+for board in result:
+    board.print_board()
 print(f"Runtime: {end_time - start_time:3f} seconds")
