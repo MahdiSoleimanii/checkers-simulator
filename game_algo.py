@@ -118,7 +118,7 @@ class Checkers:
                     boards.append(board_copy)
                     
             for board_cp in boards:
-                eval = self.minimax_alphabeta(board_copy, player, depth - 1, True, alpha, beta)
+                eval = self.minimax_alphabeta(board_cp, player, depth - 1, True, alpha, beta)
                 beta = min(beta, eval)
                 if beta <= alpha:
                     break
@@ -212,7 +212,7 @@ class Checkers:
         return boards[points.index(max(points))]
 
     def start(self, rounds: int = 0):
-        turn = False
+        turn = True
         steps = [self.game_board]
         
         if rounds == 0:
