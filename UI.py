@@ -33,14 +33,18 @@ class CheckersUI:
     def draw_board(self):
         for i in range(8):
             for j in range(8):
-                pygame.draw.rect(screen, BROWN if (i + j) % 2 == 0 else CREAM, (i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                rotated_x = j * CELL_SIZE  # Rotate x and y coordinates
+                rotated_y = (7 - i) * CELL_SIZE  # Adjust for the flipped y-axis
+
+                pygame.draw.rect(screen, BROWN if (i + j) % 2 == 0 else CREAM, (rotated_x, rotated_y, CELL_SIZE, CELL_SIZE))
+
                 if (i, j) in self.game.game_board.get_black_pieces():
                     piece = self.game.game_board.get_black_pieces()[(i, j)]
-                    self.draw_piece(i * CELL_SIZE, j * CELL_SIZE, BLACK, piece)
+                    self.draw_piece(rotated_x, rotated_y, BLACK, piece)
                 elif (i, j) in self.game.game_board.get_white_pieces():
                     piece = self.game.game_board.get_white_pieces()[(i, j)]
-                    self.draw_piece(i * CELL_SIZE, j * CELL_SIZE, WHITE, piece)
-
+                    self.draw_piece(rotated_x, rotated_y, WHITE, piece)
+                    
     def draw_piece(self, x, y, color, piece):
         pygame.draw.circle(screen, color, (x + CELL_SIZE // 2, y + CELL_SIZE // 2), CELL_SIZE // 2 - 5)
 
