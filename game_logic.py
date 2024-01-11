@@ -124,9 +124,9 @@ class GameBoard:
         current_pos_x, current_pos_y = current_pos
         new_pos_x, new_pos_y = new_pos
         
-        piece.set_pos(new_pos)
         self.matrix[current_pos_x][current_pos_y].change_state()
         self.matrix[new_pos_x][new_pos_y].change_state()
+        piece.set_pos(new_pos)
         
         if piece.get_color() == 'B':
             self.black_pieces.pop(current_pos)
