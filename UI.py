@@ -19,9 +19,9 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Checkers Game")
 
 class CheckersUI:
-    def __init__(self):
+    def __init__(self, white_depth: int, black_depth: int, beam_width: int):
         self.gboard = GameBoard()
-        self.game = Checkers(self.gboard, 5, 3, 6)
+        self.game = Checkers(self.gboard, white_depth, black_depth, beam_width)
 
     def draw_board(self):
         for i in range(8):
@@ -83,5 +83,5 @@ class CheckersUI:
         pygame.quit()
         sys.exit()
 
-checkers_ui = CheckersUI()
+checkers_ui = CheckersUI(3, 1, 6)
 checkers_ui.play()
