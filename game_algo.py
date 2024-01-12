@@ -140,7 +140,7 @@ class Checkers:
         return best_value
     
     def evaluate_game(self, board: GameBoard, player: str, depth: int):
-        return self.beam_search(board, player, depth, True, float('-inf'), float('inf'), self.BEAM_WIDTH)
+        return self.minimax_alphabeta(board, player, depth, True, float('-inf'), float('inf'))
     
     def play(self, board: GameBoard, player: str, depth: int):
         movable_pieces = {}
@@ -186,18 +186,18 @@ class Checkers:
         player = 'W' if turn else 'B'
         return self.play(current, player, depth)  
 
-gboard = GameBoard()
-game = Checkers(gboard, 5, 1, 10)
+# gboard = GameBoard()
+# game = Checkers(gboard, 5, 3, 10)
 
-start_time = time.time()
-result = gboard
-turn = True
-result.print_board()
-while not result.game_ended():
-    player = 'W' if turn else 'B'
-    depth = game.WHITE_DEPTH if turn else game.BLACK_DEPTH
-    result = game.play(result, player, depth)
-    result.print_board()
-    turn = not turn
-end_time = time.time()
-print(f'Runtime: {round(end_time - start_time, 3)} seconds')
+# start_time = time.time()
+# result = gboard
+# turn = True
+# result.print_board()
+# while not result.game_ended():
+#     player = 'W' if turn else 'B'
+#     depth = game.WHITE_DEPTH if turn else game.BLACK_DEPTH
+#     result = game.play(result, player, depth)
+#     result.print_board()
+#     turn = not turn
+# end_time = time.time()
+# print(f'Runtime: {round(end_time - start_time, 3)} seconds')
