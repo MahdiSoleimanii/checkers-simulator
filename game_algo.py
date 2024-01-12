@@ -160,31 +160,7 @@ class Checkers:
         for board_cp in boards:
             points.append(self.evaluate_game(board_cp, player, depth))
                 
-        return boards[points.index(max(points))]
-
-    def start(self, rounds: int = 0):
-        turn = True
-        steps = [self.game_board]
-        
-        if rounds == 0:
-            while not self.game_board.game_ended():
-                player = 'W' if turn else 'B'
-                depth = self.WHITE_DEPTH if turn else self.BLACK_DEPTH
-                steps.append(self.play(steps[-1], player, depth))
-                turn = not turn
-        else:
-            for _ in range(rounds):
-                player = 'W' if turn else 'B'
-                depth = self.WHITE_DEPTH if turn else self.BLACK_DEPTH
-                steps.append(self.play(steps[-1], player, depth))
-                turn = not turn
-        
-        return steps
-    
-    def start_sbs(self, current: GameBoard, turn: bool):
-        depth = self.WHITE_DEPTH if turn else self.BLACK_DEPTH
-        player = 'W' if turn else 'B'
-        return self.play(current, player, depth)  
+        return boards[points.index(max(points))] 
 
 # gboard = GameBoard()
 # game = Checkers(gboard, 5, 3, 10)
